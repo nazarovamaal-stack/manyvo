@@ -1,0 +1,27 @@
+{
+  "name": "manyvo",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "extension"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @manyvo/web",
+    "build": "npm run build -w @manyvo/web && npm run build -w @manyvo/extension",
+    "typecheck": "npm run typecheck --workspaces",
+    "test:extension": "node --test extension/tests/*.test.mjs",
+    "test:web": "vitest run",
+    "format": "prettier --write \"apps/web/**/*.{ts,tsx,css}\" \"extension/src/**/*.ts\" \"*.{json,ts,yaml}\""
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^22.0.0",
+    "crx3": "^2.0.0",
+    "jsdom": "^30.1.3",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5"
+  },
+  "type": "module"
+}

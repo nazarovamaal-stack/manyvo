@@ -1,23 +1,23 @@
 {
-  "profile": "Concurrent waves of authenticated users. Every wave GETs one new study and submits a new valid pair per user.",
-  "users": 100,
-  "requested_duration_seconds": 600,
-  "elapsed_seconds": 601.23,
-  "rounds": 617,
+  "elapsed_seconds": 600.192205375,
+  "full_tc13_profile": true,
+  "non_200": 0,
   "operations": {
-    "get": {
-      "requests": 61700,
-      "p95_seconds": 0.6942,
-      "max_seconds": 1.8878
-    },
     "answer": {
-      "requests": 61700,
-      "p95_seconds": 0.1269,
-      "max_seconds": 1.42
+      "max_seconds": 0.675959667,
+      "p95_seconds": 0.321038292,
+      "requests": 135200
+    },
+    "get": {
+      "max_seconds": 0.184129166,
+      "p95_seconds": 0.0725005,
+      "requests": 135200
     }
   },
-  "non_200": 0,
-  "server_or_transport_error_percent": 0.0,
   "passed": true,
-  "full_tc13_profile": true
+  "profile": "100 authenticated users per wave, text options, GET and one new pair per user. Moderation excluded.",
+  "requested_duration_seconds": 600,
+  "rounds": 1352,
+  "stack": "Go / PostgreSQL / Redis",
+  "users": 100
 }

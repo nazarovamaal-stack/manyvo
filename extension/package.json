@@ -1,0 +1,13 @@
+{
+  "name": "@manyvo/extension",
+  "private": true,
+  "scripts": {
+    "build": "tsc && node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "package": "npm run build && node package.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.0"
+  },
+  "type": "module"
+}

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "stack": "Next.js / Go / PostgreSQL / Redis",
+  "checks": [
+    "same-origin login and CSRF",
+    "persisted studies and hidden aggregates",
+    "guaranteed rewards and four-sector wheel",
+    "extension bearer pairing through Next.js",
+    "notification feed and delivery acknowledgement",
+    "device revocation"
+  ],
+  "native_browser_notifications_verified": false,
+  "live_openai_verified": false
+}

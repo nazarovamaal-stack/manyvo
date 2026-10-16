@@ -3,19 +3,42 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  test:
+  web-and-extension:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: python -m unittest discover -s tests -v
-      - run: node --test tests/ui.test.cjs
-      - run: node --check static/app.js
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test:extension
+      - run: npm run test:web
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: manyvo
+          POSTGRES_PASSWORD: manyvo-test-only
+          POSTGRES_DB: manyvo
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U manyvo -d manyvo"
+          --health-interval 3s --health-timeout 3s --health-retries 30
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+    env:
+      TEST_DATABASE_URL: postgres://manyvo:manyvo-test-only@localhost:5432/manyvo?sslmode=disable
+      TEST_REDIS_URL: redis://localhost:6379/15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - run: go -C backend test ./... -race -count=1

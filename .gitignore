@@ -10,3 +10,9 @@ data/
 *.sqlite*
 *.pem
 *.key
+node_modules/
+.next/
+*.tsbuildinfo
+extension/dist/
+artifacts/*.pem
+artifacts/*.key

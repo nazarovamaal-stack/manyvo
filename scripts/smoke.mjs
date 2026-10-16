@@ -1,0 +1,17 @@
+// Local end-to-end checks through the actual Next.js -> Go -> PostgreSQL/Redis stack.
+import assert from 'node:assert/strict';
+import {writeFile,mkdir} from 'node:fs/promises';
+const base=process.env.APP_URL||'http://localhost:3000';
+function client(){return {cookie:'',csrf:''};}
+async function call(c,path,method='GET',body,device){const response=await fetch(base+'/api'+path,{method,headers:{'Content-Type':'application/json','X-Manyvo-Client':device?'extension':'web',...(device?{Authorization:'Bearer '+device,Origin:'chrome-extension://manyvo-test'}:{Cookie:c.cookie,'X-CSRF-Token':c.csrf,Origin:base})},body:body===undefined?undefined:JSON.stringify(body)});const data=await response.json();if(response.headers.get('set-cookie'))c.cookie=response.headers.get('set-cookie').split(';')[0];return {status:response.status,data};}
+async function login(email){const c=client();const r=await call(c,'/login','POST',{email,password:'manyvo-demo'});assert.equal(r.status,200,JSON.stringify(r.data));c.csrf=r.data.csrf;return c;}
+const owner=await login('owner@manyvo.local'),participant=await login('anna@manyvo.local');
+const health=await call(owner,'/health');assert.equal(health.data.ok,true);
+const studies=await call(owner,'/studies');assert.equal(studies.status,200);assert.ok(studies.data.studies.some(s=>s.status==='closed'));assert.ok(studies.data.studies.some(s=>s.status==='open'));
+for(const study of studies.data.studies.filter(s=>s.status==='open')){assert.equal('personal' in study,false);assert.equal('predictions' in study,false);}
+const rewards=await call(participant,'/rewards');assert.equal(rewards.status,200);assert.ok(rewards.data.rewards.some(r=>r.channel==='guaranteed'));assert.equal(rewards.data.wheel.cost,1);assert.equal(rewards.data.wheel.sectors.length,4);assert.equal(rewards.data.wheel.available,true);assert.equal(JSON.stringify(rewards.data).includes('DEMO-guaranteed-0001'),false);
+const device=await call(participant,'/devices','POST',{name:'Automated local smoke test'});assert.equal(device.status,200);assert.ok(device.data.token.startsWith('mvo_'));
+try{const event=await call(participant,'/notifications/test','POST',{});assert.equal(event.status,200);const feed=await call(client(),'/extension/feed','GET',undefined,device.data.token);assert.equal(feed.status,200);const test=feed.data.notifications.find(n=>n.kind==='test');assert.ok(test);const ack=await call(client(),'/extension/ack','POST',{ids:[test.id]},device.data.token);assert.equal(ack.status,200);const again=await call(client(),'/extension/feed','GET',undefined,device.data.token);assert.equal(again.data.notifications.some(n=>n.id===test.id),false);}finally{await call(participant,'/devices/'+device.data.id,'POST',{});}
+const denied=await call(client(),'/me','GET',undefined,device.data.token);assert.equal(denied.status,401);
+await call(owner,'/logout','POST',{});await call(participant,'/logout','POST',{});
+const report={passed:true,stack:'Next.js / Go / PostgreSQL / Redis',checks:['same-origin login and CSRF','persisted studies and hidden aggregates','guaranteed rewards and four-sector wheel','extension bearer pairing through Next.js','notification feed and delivery acknowledgement','device revocation'],native_browser_notifications_verified:false,live_openai_verified:false};await mkdir('reports',{recursive:true});await writeFile('reports/smoke.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
