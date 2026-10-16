@@ -1,0 +1,17 @@
+C4Container
+    title Manyvo — C4 Level 2: контейнеры
+    System_Boundary(manyvo, "Manyvo") {
+        Container(web, "Веб-клиент", "React / TypeScript", "Интерфейс заказчика и участника в браузере")
+        Container(extension, "Расширение Яндекс Браузера", "TypeScript / Manifest V3", "Ответы, уведомления, баллы и награды")
+        Container(next, "Веб-сервер", "Next.js / Node.js", "Отдаёт HTML и JS, проксирует /api/*")
+        Container(api, "API и фоновые обработчики", "Go", "Бизнес-правила, диспетчер, два обработчика модерации, закрытие исследований")
+        ContainerDb(db, "Основная база", "PostgreSQL 17", "Пользователи, опросы, ответы, баллы, купоны, уведомления и задания")
+        ContainerQueue(queue, "Очередь модерации", "Redis 7", "Идентификаторы заданий manyvo:moderation")
+    }
+    System_Ext(openai, "OpenAI Moderation API", "Проверяет тексты и изображения")
+    Rel(web, next, "Загрузка приложения и /api/*", "HTTP, cookie + CSRF")
+    Rel(extension, next, "/api/*, включая опрос событий раз в минуту", "HTTP, Bearer")
+    Rel(next, api, "Проксирование /api/*", "HTTP / JSON")
+    Rel(api, db, "Чтение, запись и транзакции", "SQL / pgx")
+    Rel(api, queue, "Поставить и получить ID задания", "LPUSH / BRPOP")
+    Rel(api, openai, "POST /v1/moderations", "HTTPS / JSON")

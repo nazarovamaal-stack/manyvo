@@ -80,7 +80,6 @@ async function sync() {
     }
     if (delivered.length)
       await request("/api/extension/ack", "POST", { ids: delivered });
-    // Keep bounded deduplication state. Server delivery receipts remain authoritative.
     const ids = Object.keys(shown);
     if (ids.length > 2000) {
       for (const id of ids.slice(0, ids.length - 1000)) delete shown[id];

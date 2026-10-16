@@ -15,7 +15,6 @@ import (
 	"time"
 )
 
-// Explicitly opt in: RUN_LOAD_TEST=true. Uses a random temporary PostgreSQL schema.
 func TestLoadProfile(t *testing.T) {
 	if os.Getenv("RUN_LOAD_TEST") != "true" {
 		t.Skip("explicit 10 minute load profile")

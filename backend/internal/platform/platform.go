@@ -128,7 +128,6 @@ type Count struct {
 	Percent  float64 `json:"percent"`
 }
 
-// Queries use a small interface shared by the pool and transactions.
 type queryer interface {
 	Query(context.Context, string, ...any) (pgx.Rows, error)
 	QueryRow(context.Context, string, ...any) pgx.Row

@@ -1,0 +1,50 @@
+sequenceDiagram
+    autonumber
+    participant W as Сайт заказчика
+    participant N as Next.js
+    participant G as Go API и обработчики
+    participant P as PostgreSQL
+    participant R as Redis
+    participant O as OpenAI
+    participant E as Расширение
+    W->>N: POST /api/studies/{id}/publish<br/>Cookie + CSRF
+    N->>G: Проксирование запроса
+    G->>P: TX: moderating + moderation_jobs
+    G-->>N: JSON со статусом moderating
+    N-->>W: Публикация ожидает модерации
+    Note over G,R: Фоновая обработка в том же Go-процессе
+    G->>P: Найти задания для отправки в очередь
+    G->>R: LPUSH manyvo:moderation — ID задания
+    G->>R: BRPOP manyvo:moderation
+    R-->>G: ID задания
+    G->>P: Загрузить версию, занять задание на 120 с
+    alt DEMO_MODE=false
+        loop Для каждого варианта
+            G->>O: POST /v1/moderations — текст и изображение
+            O-->>G: Результат или ошибка
+        end
+    else DEMO_MODE=true
+        Note over G: Разрешение без запроса к OpenAI
+    end
+    alt Материалы разрешены и версия актуальна
+        G->>P: TX: open + published + уведомления аудитории
+    else Запрет или ошибка, версия актуальна
+        G->>P: TX: draft + причина
+    else Версия устарела
+        Note over G,P: Не менять исследование
+    end
+    Note over G,P: Завершить задание в PostgreSQL
+    loop Примерно раз в минуту, пока браузер работает
+        E->>N: GET /api/extension/feed — Bearer
+        N->>G: Проксирование запроса
+        G->>P: Неполученные события и доступные исследования
+        P-->>G: Данные участника
+        G-->>N: JSON
+        N-->>E: JSON с уведомлениями
+        E->>E: chrome.notifications.create
+        opt Браузер принял уведомление
+            E->>N: POST /api/extension/ack
+            N->>G: Проксирование запроса
+            G->>P: Записать notification_deliveries
+        end
+    end

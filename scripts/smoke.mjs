@@ -1,4 +1,3 @@
-// Local end-to-end checks through the actual Next.js -> Go -> PostgreSQL/Redis stack.
 import assert from 'node:assert/strict';
 import {writeFile,mkdir} from 'node:fs/promises';
 const base=process.env.APP_URL||'http://localhost:3000';

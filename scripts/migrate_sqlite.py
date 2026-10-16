@@ -1,6 +1,3 @@
-"""One-time, transactional import of the preceding local MVP into empty PostgreSQL.
-Runs psql only in this project's postgres container. Never exports API credentials.
-"""
 from pathlib import Path
 import json,math,sqlite3,subprocess,sys
 root=Path(__file__).resolve().parent.parent

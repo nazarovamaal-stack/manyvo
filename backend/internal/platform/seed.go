@@ -41,7 +41,6 @@ func (a *App) Seed(ctx context.Context) error {
 	if _, e := create("Как рассказать о новой подписке?", "Какое сообщение лучше передаёт ценность?", []string{"Больше возможностей. Каждый день.", "Всё, что любите, в одной подписке."}, 50); e != nil {
 		return e
 	}
-	// Seed fixtures are explicitly demo data, not an approval from OpenAI.
 	openSeed := func(id string) error {
 		return a.transaction(ctx, func(tx pgx.Tx) error {
 			_, e := tx.Exec(ctx, "UPDATE studies SET status='open',published_at=$1,deadline=$2,moderation_provider='demo' WHERE id=$3", a.Clock(), a.Clock()+86400, id)

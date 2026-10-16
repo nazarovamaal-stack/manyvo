@@ -1,0 +1,9 @@
+C4Context
+    title Manyvo — C4 Level 1: контекст
+    Person(owner, "Заказчик", "Создаёт исследования и сверяет прогноз с фактом")
+    Person(participant, "Участник", "Отвечает, получает баллы и награды")
+    System(manyvo, "Manyvo", "Прогнозные микроисследования для бизнеса")
+    System_Ext(openai, "OpenAI Moderation API", "Проверяет тексты и изображения")
+    Rel(owner, manyvo, "Исследования, отчёты и бизнес-факт", "Веб-интерфейс")
+    Rel(participant, manyvo, "Ответы, уведомления и награды", "Сайт или расширение")
+    Rel(manyvo, openai, "Модерация перед публикацией", "HTTPS / JSON")

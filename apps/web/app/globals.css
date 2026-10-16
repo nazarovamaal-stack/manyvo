@@ -269,7 +269,6 @@ p {
 .boot p {
   color: var(--muted);
 }
-/* Workspace */
 .shell {
   display: grid;
   grid-template-columns: 236px minmax(0, 1fr);
@@ -745,7 +744,6 @@ p {
   color: #8a9f71;
   margin-bottom: 14px;
 }
-/* Forms and study details */
 .back {
   display: inline-flex;
   align-items: center;
@@ -1177,7 +1175,6 @@ td a:hover {
   opacity: 1;
   transform: translate(-50%, 0);
 }
-/* Login */
 .login {
   min-height: 100vh;
   display: grid;
