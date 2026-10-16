@@ -12,3 +12,5 @@
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
 .sidebar-note>svg{width:18px;height:18px;display:block;margin-bottom:10px}.button>svg{width:17px;height:17px;flex-shrink:0}.notice>svg{width:14px;height:14px;vertical-align:middle;margin-right:5px}.new-icon>svg{width:21px;height:21px}.mobile-logout{display:none}@media(max-width:760px){.mobile-logout{display:inline-flex}}
+.study-card h3,.study-card p,.detail-heading h1,.detail-heading p,.option-tile p,.choice-tile p{overflow-wrap:anywhere}.choice-tile>div{min-width:0}.upload input{max-width:100%}
+@media(max-width:440px){.page-heading.row{flex-direction:column;gap:17px}.page-heading>.button{align-self:flex-start}.page-foot{flex-direction:column;gap:5px}.stat-description{font-size:9px}.stat-top svg{display:none}}
